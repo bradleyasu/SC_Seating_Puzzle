@@ -48,7 +48,6 @@ public class Seating {
 		// Initialize the array in memory
 		seatingChart = new Seat[rowCount][seatCount];
 		
-		Seat last = null;
 		
 		// Populate the rows and columns
 		for (int row = 0; row < rowCount; row++) {
@@ -56,13 +55,6 @@ public class Seating {
 				Seat seat = new Seat(row, column, calculateDistance(row, column));
 				seatingChart[row][column] = seat;
 				priorityList.add(seat);
-				if(last != null){
-					last.setRight(seat);
-					seat.setLeft(last);;
-				}
-				if(row > 0){
-					seatingChart[row-1][column].setBelow(seat);
-				}
 			}
 		}
 		
@@ -119,9 +111,6 @@ public class Seating {
 
 	}
 
-
-
-	
 	/**
 	 * Provide the total number of seats that are required for the group to be seated,
 	 * this method will find the best group of seats available for seating.  The return
@@ -133,73 +122,37 @@ public class Seating {
 	 * @return - The starting seat where the group can be assigned.  This method will
 	 * 			 return 'null' if there are locations for the group to be placed
 	 * 
-	 * NOTE: This method was a first attack approach.  I was going to delete it, but figured
-	 * might as well leave it.  It's not very efficient, O(n^2) + k - where k = total.
+	 * NOTE: This method is a bit better than the previous I think.  Best case would be O(1) +k and worst case
+	 * would be around, O(n) + k - where k = total.
 	 */
 	private Seat findSeats(int total) {
-		// The reference for the first seat of the best group placement will be stored here
-		Seat bestSeat = null;
-		
-		// Ideally, the best weight will be the lowest weight.   The weight is the sum of all
-		// the calculated Manhattan distances of the seats in the group.
-		int bestWeight = -1;
-
-		// As the search for the best group placement continues, the placement that is
-		// currently being evaluated will be placed here
-		int workingWeight = 0;
-		
-		// In order for the placement to be successful, the number of people seated will have to 
-		// be equal to the total.  So, we start with 0 and will increment as we find potential placement locations
-		int seated = 0;
-		
-		// We will iterate over each row and column looking for groups of size n (n = total).
-		// The working seat will be the first seat of the potential group
-		Seat workingSeat = null;
-		
-		// Iterate over each row
-		for (int row = 0; row < rowCount; row++) {
-
-			// Then, iterate over each seat (or column) of that row
-			for (int col = 0; col < seatCount - total + 1; col++) {
-				// update the current working seat reference
-				workingSeat = seatingChart[row][col];
-				
-				// Reset the 'weight' value and 'seated' value which was most likely
-				// updated in the last iteration (unless it is the first cycle)
-				workingWeight = 0;
-				seated = 0;
-
-				// Starting with the current working seat location and continuing until we are at 
-				// the at the working seat location + the total number of seats being requested
-				for (int groupSeat = col; groupSeat < total + col; groupSeat++) {
-					
-					// Get the seat
-					Seat seat = seatingChart[row][groupSeat];
-					
-					// and check if it is reserved
-					if (!seat.isReserved()) {
-						// if it is not reserved, then update the weight
-						workingWeight += seat.getDistance();
-						// and increment the number of seats in the group that are able to be seated here
-						seated++;
-					}
-				}
-
-				// If his is the first cycle or the previously calculated working weight is 
-				// less than any that came before AND everyone in the group was able to be seated,
-				// then we have found a new best seat.  Update the best seat reference and the new
-				// best calculated weight
-				if ((workingWeight < bestWeight || bestWeight == -1) && seated == total) {
-					bestWeight = workingWeight;
-					bestSeat = workingSeat;
-
+		Seat seat = null;
+		int index = 0;
+		for(Seat s : priorityList){
+			int row = s.getRow();
+			int col = s.getColumn();
+			int seated = 0;
+			System.out.println(s);
+			for(int i = col - total/2; seated < total; i++){
+				if(isValidSeat(row,i) && !seatingChart[row][i].isReserved()){
+					seated ++;
+				} else {
+					break;
 				}
 			}
+			if(seated == total){
+				
+				seat = seatingChart[row][col - total/2];
+				break;
+			}
+			index++;
 		}
-		
-		// Return the first seat reference of the best placement or null if nothing was found
-		return bestSeat;
+		priorityList.remove(index);
+		return seat;
 	}
+	
+
+
 
 	/**
 	 * Verifies that the seat number at the specified row and column

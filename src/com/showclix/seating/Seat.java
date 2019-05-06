@@ -10,9 +10,6 @@ public class Seat implements Comparable<Seat>{
 	private boolean reserved = false;
 	private boolean preReservation = false;
 	
-	private Seat left = null;
-	private Seat right = null;
-	private Seat below = null;
 
 	public Seat(int rowNumber, int colNumber, int distance) {
 		this.rowNumber = rowNumber;
@@ -20,29 +17,6 @@ public class Seat implements Comparable<Seat>{
 		this.distance = distance;
 	}
 	
-	public void setLeft(Seat seat) {
-		left = seat;
-	}
-	
-	public void setRight(Seat seat) {
-		right = seat;
-	}
-	
-	public void setBelow(Seat seat){
-		below = seat;
-	}
-	
-	public Seat getLeft() {
-		return left;
-	}
-	
-	public Seat getRight() {
-		return right;
-	}
-	
-	public Seat getBelow() {
-		return below;
-	}
 
 	public int getDistance() {
 		return distance;
