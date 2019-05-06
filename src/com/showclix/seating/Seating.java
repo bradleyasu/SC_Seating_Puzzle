@@ -29,11 +29,13 @@ public class Seating {
 	// Matrix of Seat objects that make up the seating chart
 	private Seat[][] seatingChart;
 
-	// This data structure will keep a list of references to seat objects in order from best to worst seat based
+	// This data structure will keep a list of references to seat objects in
+	// order from best to worst seat based
 	// on Manhattan distance
 	private List<Seat> priorityList;
 
-	// A variable that will be set in the constructor that represents the maximum number of seats a user can request 
+	// A variable that will be set in the constructor that represents the
+	// maximum number of seats a user can request
 	private int maxRequests;
 
 	// A counter to keep track of how man seats are still available
@@ -71,10 +73,12 @@ public class Seating {
 				priorityList.add(seat);
 			}
 		}
-		// To make the array into a "priority list", sort the array based on Manhattan distance
+		// To make the array into a "priority list", sort the array based on
+		// Manhattan distance
 		Collections.sort(priorityList);
-		
-		// The default number of available seats is simply the number of rows multiplied by the number of columns
+
+		// The default number of available seats is simply the number of rows
+		// multiplied by the number of columns
 		availableSeats = rowCount * seatCount;
 	}
 
@@ -108,7 +112,8 @@ public class Seating {
 	 * This is a wrapper method that will parse the Label version of a seat to
 	 * find the row and column of the requested seat and reserve it
 	 * 
-	 * @param reservation  The seat label to reserve - example: R1C4
+	 * @param reservation
+	 *            The seat label to reserve - example: R1C4
 	 * @throws InvalidSeatException
 	 */
 	public void preReserveSeat(String reservation) throws InvalidSeatException {
@@ -130,8 +135,7 @@ public class Seating {
 	 *            - Total size of the group that is looking to be seated
 	 * @throws MaximumRequestsExceededException
 	 */
-	public String requestSeats(int total)
-			throws MaximumRequestsExceededException {
+	public String requestSeats(int total) throws MaximumRequestsExceededException {
 
 		String seatLabel = "Not Available";
 
@@ -156,7 +160,8 @@ public class Seating {
 				seatLabel = seats.get(0).toString();
 			}
 
-			// decrement the total number available seats by how many seats were just reserved
+			// decrement the total number available seats by how many seats were
+			// just reserved
 			availableSeats -= total;
 		}
 
@@ -237,14 +242,15 @@ public class Seating {
 
 			// Break if the seat isn't valid/out of bounds
 			if (isValidSeat(seat.getRow(), column)) {
-				
+
 				// Get the next seat
 				Seat temp = seatingChart[seat.getRow()][column];
 
 				// check if it's reserved and if it's not, add it into the list
 				if (!temp.isReserved()) {
-					
-					// Depending on which way we're checking, left or right, we will add it to the start
+
+					// Depending on which way we're checking, left or right, we
+					// will add it to the start
 					// or end of the list
 					if (multiplier == -1) {
 						seats.add(temp);
@@ -254,7 +260,7 @@ public class Seating {
 				} else {
 					break;
 				}
-				
+
 				// increment the count and calculate the next offset
 				count++;
 				offset = count * multiplier;
