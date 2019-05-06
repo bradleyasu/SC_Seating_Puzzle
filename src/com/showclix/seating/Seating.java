@@ -66,8 +66,7 @@ public class Seating {
 		// Populate the rows and columns
 		for (int row = 0; row < rowCount; row++) {
 			for (int column = 0; column < seatCount; column++) {
-				Seat seat = new Seat(row, column,
-						calculateDistance(row, column));
+				Seat seat = new Seat(row, column, calculateDistance(row, column));
 				seatingChart[row][column] = seat;
 				priorityList.add(seat);
 			}
@@ -101,8 +100,7 @@ public class Seating {
 			seatingChart[row][column].setPreReservation();
 			availableSeats--;
 		} else {
-			throw new InvalidSeatException("No Seat available at row: " + row
-					+ " column: " + column);
+			throw new InvalidSeatException("No Seat available at row: " + row + " column: " + column);
 		}
 	}
 
@@ -138,9 +136,7 @@ public class Seating {
 		String seatLabel = "Not Available";
 
 		if (total > maxRequests) {
-			throw new MaximumRequestsExceededException(total
-					+ " has exceeded the maximum number of requets: "
-					+ maxRequests);
+			throw new MaximumRequestsExceededException(total + " has exceeded the maximum number of requets: " + maxRequests);
 		}
 
 		// Search for a seating placement
@@ -310,9 +306,7 @@ public class Seating {
 	public void print() {
 		for (int row = 0; row < rowCount; row++) {
 			for (int column = 0; column < seatCount; column++) {
-				Output.getInstance().print(
-						" " + seatingChart[row][column].getSeatStatusSymbol()
-								+ " ");
+				Output.getInstance().print(" " + seatingChart[row][column].getSeatStatusSymbol() + " ");
 			}
 			Output.getInstance().print("\n");
 		}
