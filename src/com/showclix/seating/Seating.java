@@ -3,6 +3,7 @@ package com.showclix.seating;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * The Seating class is responsible for handling and deciding where reservations should
@@ -94,17 +95,13 @@ public class Seating {
 	public void requestSeats(int total) {
 		
 		// Search for a seating placement
-		Seat best = findSeats(total);
-
+		List<Seat> seats = findSeats(total);
 		// If a seating placement was found
-		if (best != null) {
-			
-			// Starting with the first seat and continuing until the group size
-			for (int i = 0; i < total; i++) {
-				// mark the seats as reserved
-				seatingChart[best.getRow()][best.getColumn() + i].setReserved();
+		if (!seats.isEmpty()) {
+			for(Seat seat : seats) {
+				seat.setReserved();
 			}
-			
+		//	System.out.println(seats.get(0) + " - " + seats.get(seats.size() - 1));
 		} else {
 			System.out.println("Not Available");
 		}
@@ -122,36 +119,71 @@ public class Seating {
 	 * @return - The starting seat where the group can be assigned.  This method will
 	 * 			 return 'null' if there are locations for the group to be placed
 	 * 
-	 * NOTE: This method is a bit better than the previous I think.  Best case would be O(1) +k and worst case
-	 * would be around, O(n) + k - where k = total.
 	 */
-	private Seat findSeats(int total) {
-		Seat seat = null;
-		int index = 0;
-		for(Seat s : priorityList){
-			int row = s.getRow();
-			int col = s.getColumn();
-			int seated = 0;
-			System.out.println(s);
-			for(int i = col - total/2; seated < total; i++){
-				if(isValidSeat(row,i) && !seatingChart[row][i].isReserved()){
-					seated ++;
-				} else {
-					break;
-				}
+	private List<Seat> findSeats(int total) {
+		
+		List<Seat> seats = new ArrayList<Seat>();
+		
+		// All of the seats have been pre-ordered.  Iterate
+		// over the list of seats from best to worst
+		for(Seat prioritySeat : priorityList){
+			
+			seats = checkLeft(prioritySeat, total);
+			
+			if(seats.size() < total) {
+				seats = checkRight(prioritySeat, total);
 			}
-			if(seated == total){
-				
-				seat = seatingChart[row][col - total/2];
+			
+			if(seats.size() < total) {
+				seats.clear();
+			} else {
+				System.out.println("Priority Seat found: "+prioritySeat);
 				break;
 			}
-			index++;
+			
+			
 		}
-		priorityList.remove(index);
-		return seat;
+	
+		
+		
+		return seats;
 	}
 	
-
+	
+	private List<Seat> checkLeft(Seat seat, int total) {
+		List<Seat> leftSeats = new ArrayList<Seat>();
+		for(int column = seat.getColumn(); column > 0 && leftSeats.size() < total; column--){
+			
+			Seat temp = seatingChart[seat.getRow()][column];
+			
+			if(!temp.isReserved()){
+				leftSeats.add(temp);
+			} else {
+				break;
+			}
+		}
+		
+		
+		return leftSeats;
+	}
+	
+	private List<Seat> checkRight(Seat seat, int total) {
+		List<Seat> rightSeats = new ArrayList<Seat>();
+		
+		for(int column = seat.getColumn(); column < seatCount && rightSeats.size() < total; column++){
+			
+			Seat temp = seatingChart[seat.getRow()][column];
+			
+			if(!temp.isReserved()){
+				rightSeats.add(temp);
+			} else {
+				break;
+			}
+		}
+		
+		
+		return rightSeats;
+	}
 
 
 	/**

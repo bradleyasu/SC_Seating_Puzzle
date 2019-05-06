@@ -71,19 +71,6 @@ public class Seat implements Comparable<Seat>{
 	}
 	
 	@Override
-	public int hashCode() {
-		return getRow() << 16 & getColumn();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if(o == null || !(o instanceof Seat)){
-			return false;
-		}
-		return ((Seat)o).getColumn() == getColumn() && ((Seat)o).getRow() == getRow(); 
-	}
-
-	@Override
 	public int compareTo(Seat s) {
 		return getDistance() - s.getDistance();
 	}

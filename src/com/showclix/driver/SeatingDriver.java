@@ -1,7 +1,5 @@
 package com.showclix.driver;
 
-import java.util.concurrent.TimeUnit;
-
 import com.showclix.seating.Seating;
 import com.showclix.seating.util.Settings;
 
@@ -31,20 +29,21 @@ public class SeatingDriver {
 		this.seating = new Seating(Settings.getInstance().getInt("seating.chart.rowCount", 3), 
 								   Settings.getInstance().getInt("seating.chart.seatCount", 11));
 
-//		this.seating.preReserveSeat(1, 4);
-//		this.seating.preReserveSeat(1, 6);
-//		this.seating.preReserveSeat(2, 3);
-//		this.seating.preReserveSeat(2, 7);
-//		this.seating.preReserveSeat(3, 9);
-//		this.seating.preReserveSeat(3, 10);
-		this.seating.requestSeats(2);
-		this.seating.requestSeats(2);
-		this.seating.requestSeats(2);
+		this.seating.preReserveSeat(1, 4);
+		this.seating.preReserveSeat(1, 6);
+		this.seating.preReserveSeat(2, 3);
+		this.seating.preReserveSeat(2, 7);
+		this.seating.preReserveSeat(3, 9);
+		this.seating.preReserveSeat(3, 10);
+//		this.seating.requestSeats(2);
+//		this.seating.requestSeats(2);
 		
-//		this.seating.requestSeats(3);
-//		this.seating.requestSeats(3);
-//		this.seating.requestSeats(1);
+		this.seating.requestSeats(3);
+		this.seating.requestSeats(3);
+		this.seating.requestSeats(3);
+		this.seating.requestSeats(1);
 		
+		this.seating.requestSeats(2);
 		// this.seating.requestSeats(10);
 
 		this.seating.print();
