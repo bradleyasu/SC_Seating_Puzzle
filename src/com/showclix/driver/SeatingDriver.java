@@ -52,7 +52,7 @@ public class SeatingDriver {
 			linesRead++;
 		}
 		scanner.close();
-		Output.getInstance().print(seating.getAvailableSeats());
+		Output.getInstance().println(seating.getAvailableSeats());
 	}
 	
 	public void importFile(String filePath) {
@@ -67,7 +67,7 @@ public class SeatingDriver {
 				
 				linesRead++;
 			}
-			Output.getInstance().print(seating.getAvailableSeats());
+			Output.getInstance().println(seating.getAvailableSeats());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -92,7 +92,7 @@ public class SeatingDriver {
 	private boolean parseRequest(int seatingRequest) {
 		boolean success = false;
 		try {
-			this.seating.requestSeats(seatingRequest);
+			Output.getInstance().println(this.seating.requestSeats(seatingRequest));
 			success = true;
 		} catch (MaximumRequestsExceededException e) {
 			e.printStackTrace();
