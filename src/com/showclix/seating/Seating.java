@@ -183,7 +183,7 @@ public class Seating {
 		int offset = 0;
 		int count = 0;
 		int multiplyer = -1;
-		for(int column = seat.getColumn(); column > 0 && seats.size() < total; column+=offset){
+		for(int column = seat.getColumn(); seats.size() < total; column+=offset){
 			
 			if(isValidSeat(seat.getRow(), column)){
 				Seat temp = seatingChart[seat.getRow()][column];
