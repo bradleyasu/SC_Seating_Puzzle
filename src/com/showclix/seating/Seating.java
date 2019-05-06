@@ -163,11 +163,9 @@ public class Seating {
 		// over the list of seats from best to worst
 		for(Seat prioritySeat : priorityList){
 			
-			seats = checkLeft(prioritySeat, total);
 			
-			if(seats.size() < total) {
-				seats = checkRight(prioritySeat, total);
-			}
+			seats = checkNeighbors(prioritySeat, total);
+			
 			
 			if(seats.size() < total) {
 				seats.clear();
@@ -180,42 +178,35 @@ public class Seating {
 		return seats;
 	}
 	
-	
-	private List<Seat> checkLeft(Seat seat, int total) {
-		List<Seat> leftSeats = new ArrayList<Seat>();
-		for(int column = seat.getColumn(); column > 0 && leftSeats.size() < total; column--){
+	private List<Seat> checkNeighbors(Seat seat, int total) {
+		List<Seat> seats = new ArrayList<Seat>();
+		int offset = 0;
+		int count = 0;
+		int multiplyer = -1;
+		for(int column = seat.getColumn(); column > 0 && seats.size() < total; column+=offset){
 			
-			Seat temp = seatingChart[seat.getRow()][column];
-			
-			if(!temp.isReserved()){
-				leftSeats.add(0, temp);
+			if(isValidSeat(seat.getRow(), column)){
+				Seat temp = seatingChart[seat.getRow()][column];
+				
+				if(!temp.isReserved()){
+					if(multiplyer == -1){
+						seats.add(temp);
+					} else {
+						seats.add(0, temp);
+					}
+				} else {
+					break;
+				}
+				count++;
+				offset = count * multiplyer;
+				multiplyer *= -1;
 			} else {
 				break;
 			}
 		}
-		
-		
-		return leftSeats;
+		return seats;
 	}
 	
-	private List<Seat> checkRight(Seat seat, int total) {
-		List<Seat> rightSeats = new ArrayList<Seat>();
-		
-		for(int column = seat.getColumn(); column < seatCount && rightSeats.size() < total; column++){
-			
-			Seat temp = seatingChart[seat.getRow()][column];
-			
-			if(!temp.isReserved()){
-				rightSeats.add(temp);
-			} else {
-				break;
-			}
-		}
-		
-		
-		return rightSeats;
-	}
-
 
 	/**
 	 * Verifies that the seat number at the specified row and column
