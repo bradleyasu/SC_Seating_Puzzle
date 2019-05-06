@@ -1,6 +1,14 @@
 package com.showclix.driver;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+
 import com.showclix.seating.Seating;
+import com.showclix.seating.exceptions.InvalidSeatException;
+import com.showclix.seating.exceptions.MaximumRequestsExceededException;
+import com.showclix.seating.util.Output;
 import com.showclix.seating.util.Settings;
 
 /**
@@ -20,6 +28,7 @@ public class SeatingDriver {
 	// but you could have some sort of data structures of different Seating objects
 	// of different configurations if it were needed
 	private Seating seating;
+	private int linesRead = 0;
 
 	public SeatingDriver() {
 
@@ -28,25 +37,67 @@ public class SeatingDriver {
 	public void initialize() {
 		this.seating = new Seating(Settings.getInstance().getInt("seating.chart.rowCount", 3), 
 								   Settings.getInstance().getInt("seating.chart.seatCount", 11));
-
-		this.seating.preReserveSeat(1, 4);
-		this.seating.preReserveSeat(1, 6);
-		this.seating.preReserveSeat(2, 3);
-		this.seating.preReserveSeat(2, 7);
-		this.seating.preReserveSeat(3, 9);
-		this.seating.preReserveSeat(3, 10);
-//		this.seating.requestSeats(2);
-//		this.seating.requestSeats(2);
 		
-		this.seating.requestSeats(3);
-		this.seating.requestSeats(3);
-		this.seating.requestSeats(3);
-		this.seating.requestSeats(1);
+	}
+	
+	public void listen() {
+		Scanner scanner = new Scanner(System.in);
+		scanner.useDelimiter("\n");
+		while(scanner.hasNext()) {
+			if(linesRead == 0){
+				parseReservations(scanner.next());
+			} else {
+				parseRequest(Integer.parseInt(scanner.next().replaceAll("[^0-9]", "")));
+			}
+			linesRead++;
+		}
+		scanner.close();
+		Output.getInstance().print(seating.getAvailableSeats());
+	}
+	
+	public void importFile(String filePath) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if(linesRead == 0){
+					parseReservations(line);
+				} else {
+					parseRequest(Integer.parseInt(line.replaceAll("[^0-9]", "")));
+				}
+				
+				linesRead++;
+			}
+			Output.getInstance().print(seating.getAvailableSeats());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		this.seating.requestSeats(2);
-		// this.seating.requestSeats(10);
-
-		this.seating.print();
+		seating.print();
+	}
+	
+	private boolean parseReservations(String line) {
+		boolean success = false;
+		try{
+			String[] reservations = line.split(" ");
+			for(String reservation : reservations) {
+				this.seating.preReserveSeat(reservation);
+			}
+			success = true;
+		} catch (InvalidSeatException e) {
+			e.printStackTrace();
+		}
+		return success;
+	}
+	
+	private boolean parseRequest(int seatingRequest) {
+		boolean success = false;
+		try {
+			this.seating.requestSeats(seatingRequest);
+			success = true;
+		} catch (MaximumRequestsExceededException e) {
+			e.printStackTrace();
+		}
+		return success;
 	}
 	
 	/**
@@ -54,13 +105,20 @@ public class SeatingDriver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
 		// Create a new Seating Driver
 		SeatingDriver driver = new SeatingDriver();
 		
 		// Initialize it's contents
-		driver.initialize();
-		System.out.println("Total Time: "+(System.currentTimeMillis()-start)+"ms");
+			driver.initialize();
+		
+		if(args.length == 0){
+			// Listen for STDIN
+			driver.listen();
+		} else {
+			// The input is in a file, parse the file
+			driver.importFile(args[0]);
+		}
+		
 	}
 
 }

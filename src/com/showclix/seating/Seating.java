@@ -3,7 +3,11 @@ package com.showclix.seating;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
+
+import com.showclix.seating.exceptions.InvalidSeatException;
+import com.showclix.seating.exceptions.MaximumRequestsExceededException;
+import com.showclix.seating.util.Output;
+import com.showclix.seating.util.Settings;
 
 /**
  * The Seating class is responsible for handling and deciding where reservations should
@@ -26,7 +30,10 @@ public class Seating {
 	private Seat[][] seatingChart;
 	
 	private List<Seat> priorityList;
+	
+	private int maxRequests;
 
+	private int availableSeats = 0;
 
 	public Seating(int rowCount, int seatCount) {
 		this.seatCount = seatCount;
@@ -34,6 +41,7 @@ public class Seating {
 
 		this.priorityList = new ArrayList<>();
 		
+		this.maxRequests =  Settings.getInstance().getInt("seating.requests.max", 10);
 		// initialize data structure
 		initializeSeatingChart();
 	}
@@ -58,9 +66,8 @@ public class Seating {
 				priorityList.add(seat);
 			}
 		}
-		
 		Collections.sort(priorityList);
-
+		availableSeats = rowCount * seatCount;
 	}
 
 	/**
@@ -70,8 +77,9 @@ public class Seating {
 	 * 
 	 * @param row - row number of seat to be pre-reserved
 	 * @param column - column number of seat to pre-reserved
+	 * @throws InvalidSeatException 
 	 */
-	public void preReserveSeat(int row, int column) {
+	public void preReserveSeat(int row, int column) throws InvalidSeatException {
 		// Account for the "off-by-one" behavior of the array
 		row = row - 1;
 		column = column - 1;
@@ -80,9 +88,19 @@ public class Seating {
 		if (isValidSeat(row, column)) {
 			// Pre-Reserve the seat
 			seatingChart[row][column].setPreReservation();
+			availableSeats--;
+		} else {
+			throw new InvalidSeatException("No Seat available at row: "+row+" column: "+column);
 		}
 	}
 
+	public void preReserveSeat(String reservation) throws InvalidSeatException {
+		String[] parts = reservation.split("C");
+		int row = Integer.parseInt(parts[0].replaceAll("[^0-9]",  ""));
+		int col = Integer.parseInt(parts[1].replaceAll("[^0-9]", ""));
+		preReserveSeat(row, col);
+	}
+	
 	/**
 	 * This method will call the helper 'findSeats' method to search for placement
 	 * for the group size specified through the argument.  Once a placement is found
@@ -91,8 +109,13 @@ public class Seating {
 	 * available placements for the group size requested.
 	 *  
 	 * @param total - Total size of the group that is looking to be seated
+	 * @throws MaximumRequestsExceededException 
 	 */
-	public void requestSeats(int total) {
+	public void requestSeats(int total) throws MaximumRequestsExceededException {
+		
+		if(total > maxRequests){
+			throw new MaximumRequestsExceededException(total + " has exceeded the maximum number of requets: "+maxRequests);
+		}
 		
 		// Search for a seating placement
 		List<Seat> seats = findSeats(total);
@@ -101,19 +124,31 @@ public class Seating {
 			for(Seat seat : seats) {
 				seat.setReserved();
 			}
-		//	System.out.println(seats.get(0) + " - " + seats.get(seats.size() - 1));
+			
+			// Format the output to show a range of seats
+			if(seats.size() > 1) {
+				Output.getInstance().print(seats.get(0) + " - " + seats.get(seats.size() - 1));
+			
+			// Or single seat depending on how many seats were requested
+			} else {
+				Output.getInstance().print(seats.get(0));
+			}
+			
+			availableSeats -= total;
 		} else {
-			System.out.println("Not Available");
+			Output.getInstance().print("Not Available");
 		}
 
+	}
+	
+	public int getAvailableSeats() {
+		return this.availableSeats;
 	}
 
 	/**
 	 * Provide the total number of seats that are required for the group to be seated,
 	 * this method will find the best group of seats available for seating.  The return
-	 * value from this method will be the first seat in the group.  For example, if the
-	 * seat returned is R1C4 and the group size is 3, then the group can be seated at
-	 * R1C4, R1C5, R1C6
+	 * value from this method will be an array of the seats that can be reserved
 	 * 
 	 * @param total - The total size of the group that is looking to be seated
 	 * @return - The starting seat where the group can be assigned.  This method will
@@ -137,14 +172,10 @@ public class Seating {
 			if(seats.size() < total) {
 				seats.clear();
 			} else {
-				System.out.println("Priority Seat found: "+prioritySeat);
 				break;
 			}
 			
-			
 		}
-	
-		
 		
 		return seats;
 	}
@@ -157,7 +188,7 @@ public class Seating {
 			Seat temp = seatingChart[seat.getRow()][column];
 			
 			if(!temp.isReserved()){
-				leftSeats.add(temp);
+				leftSeats.add(0, temp);
 			} else {
 				break;
 			}
