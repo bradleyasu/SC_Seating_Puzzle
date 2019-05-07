@@ -1,0 +1,7 @@
+
+# Driver Configurations
+
+seating.chart.rowCount = 3
+seating.chart.seatCount = 11
+
+seating.requests.max = 10

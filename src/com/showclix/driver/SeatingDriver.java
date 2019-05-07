@@ -25,8 +25,7 @@ import com.showclix.seating.util.Settings;
 public class SeatingDriver {
 
 	// Reference to the Seating object. For now, it's just one reference,
-	// but you could have some sort of data structures of different Seating
-	// objects
+	// but you could have some sort of data structures of different Seating objects
 	// of different configurations if it were needed
 	private Seating seating;
 	private int linesRead = 0;
