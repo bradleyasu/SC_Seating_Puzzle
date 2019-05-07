@@ -83,6 +83,25 @@ public class Seating {
 	}
 
 	/**
+	 * Provided a row and column location, this method will return the seat at
+	 * that location
+	 * 
+	 * @param row
+	 *            row number of the seat
+	 * @param column
+	 *            column number of the seat
+	 * @return The Seat object that is located in the row and column specified
+	 * @throws InvalidSeatException
+	 */
+	public Seat getSeat(int row, int column) throws InvalidSeatException {
+		if (!isValidSeat(row, column)) {
+			throw new InvalidSeatException("No Seat available at row: " + row + " column: " + column);
+		}
+		return seatingChart[row][column];
+
+	}
+
+	/**
 	 * "Pre-Reservations" are reservations that are made before group placements
 	 * are searched for. This method will put a pre-reservation on the seat at
 	 * the row and column specified.
@@ -121,6 +140,29 @@ public class Seating {
 		int row = Integer.parseInt(parts[0].replaceAll("[^0-9]", ""));
 		int col = Integer.parseInt(parts[1].replaceAll("[^0-9]", ""));
 		preReserveSeat(row, col);
+	}
+
+	/**
+	 * Checks to see if a seat is reserved either by pre-reservation or normal
+	 * reservation
+	 * 
+	 * @param row
+	 *            - row number to check
+	 * @param column
+	 *            - column number of seat to check
+	 * @return true if the seat is reserved, false otherwise
+	 * @throws InvalidSeatException
+	 */
+	public boolean isSeatReserved(int row, int column) throws InvalidSeatException {
+		row--;
+		column--;
+		boolean reserved = false;
+		if (isValidSeat(row, column)) {
+			reserved = seatingChart[row][column].isReserved();
+		} else {
+			throw new InvalidSeatException("No Seat available at row: " + row + " column: " + column);
+		}
+		return reserved;
 	}
 
 	/**

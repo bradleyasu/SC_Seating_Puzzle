@@ -4,8 +4,23 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Seat Tests
+ * 
+ * Again, some basic unit testing that could be more thorough.
+ * 
+ * @author Bradley Sheets
+ * @version 1.0
+ * @date May 7, 2019
+ * 
+ */
 public class SeatTest {
 
+	/**
+	 * Creates a couple of seats and checks to see if
+	 * the seat label matches the seats row and column information
+	 * 
+	 */
 	@Test
 	public void testGetSeatLabel() {
 		Seat seatOne = new Seat(2,2, 0);
@@ -19,6 +34,13 @@ public class SeatTest {
 		assertEquals("R31C1002", seatFour.getSeatLabel());
 	}
 	
+	
+	/**
+	 * Creates a couple of seats and checks to see if the distance
+	 * set in the seat is correctly set.  This method does not 
+	 * test calculating the distance.  That is done in the Seating
+	 * class
+	 */
 	@Test
 	public void testGetDistance() {
 		Seat seatOne = new Seat(1,1, 1008);
@@ -33,6 +55,10 @@ public class SeatTest {
 	}
 	
 	
+	/**
+	 * Creats a couple of seats and checks to see if
+	 * they were placed in the correct row
+	 */
 	@Test
 	public void testGetRow() {
 		Seat seatOne = new Seat(2,2, 0);
@@ -47,6 +73,10 @@ public class SeatTest {
 	}
 	
 	
+	/**
+	 * Creates a couple of Seats and checks to see
+	 * if they were placed in the correct column
+	 */
 	@Test
 	public void testGetColumn() {
 		Seat seatOne = new Seat(2,2, 0);
