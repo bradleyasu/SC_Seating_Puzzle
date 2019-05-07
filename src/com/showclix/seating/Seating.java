@@ -201,7 +201,6 @@ public class Seating {
 			} else {
 				break;
 			}
-
 		}
 
 		return seats;
@@ -282,7 +281,7 @@ public class Seating {
 	 *            - Column of the seat to check
 	 * @return True if the seat is valid, False otherwise
 	 */
-	private boolean isValidSeat(int row, int column) {
+	public boolean isValidSeat(int row, int column) {
 		return (row >= 0 && row < rowCount && column >= 0 && column < seatCount);
 	}
 

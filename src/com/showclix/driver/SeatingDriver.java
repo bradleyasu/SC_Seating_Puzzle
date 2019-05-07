@@ -103,7 +103,8 @@ public class SeatingDriver {
 			e.printStackTrace();
 		}
 
-		seating.print();
+		// uncomment to print seating table
+		//seating.print();
 	}
 
 	/**
